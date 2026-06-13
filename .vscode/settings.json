@@ -1,0 +1,7 @@
+{
+  "css.lint.unknownAtRules": "ignore",
+  "stylelint.enable": false,
+  "[css]": {
+    "editor.defaultFormatter": "aeschli.vscode-css-sorter"
+  }
+}

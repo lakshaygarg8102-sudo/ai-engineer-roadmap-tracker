@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+
+    "target": "ES2022",
+
+    "module": "ESNext",
+
+    "jsx": "react-jsx",
+
+    "strict": true,
+
+    "moduleResolution": "bundler",
+
+    "allowSyntheticDefaultImports": true,
+
+    "esModuleInterop": true,
+
+    "skipLibCheck": true,
+
+    "noEmit": true,
+
+    "isolatedModules": true,
+
+    "types": ["vite/client"]
+
+  },
+
+  "include": ["main.tsx", "src", "src/**/*"],
+
+  "exclude": ["node_modules"]
+
+}
