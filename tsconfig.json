@@ -27,6 +27,6 @@
 
   "include": ["main.tsx", "src", "src/**/*"],
 
-  "exclude": ["node_modules"]
+  "exclude": ["ai-engineer-roadmap-tracker/node_modules"]
 
 }
