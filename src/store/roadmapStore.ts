@@ -1,5 +1,9 @@
 import { create } from "zustand";
 
+interface LastVisitedLocation {
+  section: string | null;
+}
+
 interface RoadmapState {
   completedTopics: string[];
 
@@ -7,17 +11,31 @@ interface RoadmapState {
 
   lastLearningModule: string;
 
-  currentSection: string | null;
+  lastVisitedSections: Record<
+    string,
+    LastVisitedLocation
+  >;
 
-  setCurrentModule: (module: string) => void;
-
-  setCurrentSection: (
-    section: string | null
+  setCurrentModule: (
+    module: string
   ) => void;
 
-  toggleTopic: (topicId: string) => void;
+  setCurrentSection: (
+    module: string,
+    section: string
+  ) => void;
 
-  isCompleted: (topicId: string) => boolean;
+  getCurrentSection: (
+    module: string
+  ) => string | null;
+
+  toggleTopic: (
+    topicId: string
+  ) => void;
+
+  isCompleted: (
+    topicId: string
+  ) => boolean;
 
   clearProgress: () => void;
 }
@@ -41,10 +59,11 @@ export const useRoadmapStore =
         "lastLearningModule"
       ) || "python",
 
-    currentSection:
+    lastVisitedSections: JSON.parse(
       localStorage.getItem(
-        "currentSection"
-      ) || null,
+        "lastVisitedSections"
+      ) || "{}"
+    ),
 
     setCurrentModule: (module) => {
 
@@ -60,54 +79,65 @@ export const useRoadmapStore =
           module
         );
 
-        // New module starts from top
-        localStorage.removeItem(
-          "currentSection"
-        );
-
-        set({
-
-          currentModule: module,
-
-          lastLearningModule: module,
-
-          currentSection: null,
-
-        });
-
-        return;
       }
 
       set({
 
         currentModule: module,
 
+        lastLearningModule:
+          module === "dashboard"
+            ? get().lastLearningModule
+            : module,
+
       });
 
     },
 
-    setCurrentSection: (section) => {
+    setCurrentSection: (
+      module,
+      section
+    ) => {
 
-      if (section) {
+      const updated = {
 
-        localStorage.setItem(
-          "currentSection",
-          section
-        );
+        ...get().lastVisitedSections,
 
-      } else {
+        [module]: {
 
-        localStorage.removeItem(
-          "currentSection"
-        );
+          section,
 
-      }
+        },
+
+      };
+
+      localStorage.setItem(
+
+        "lastVisitedSections",
+
+        JSON.stringify(updated)
+
+      );
 
       set({
 
-        currentSection: section,
+        lastVisitedSections:
+          updated,
 
       });
+
+    },
+
+    getCurrentSection: (
+      module
+    ) => {
+
+      return (
+        get()
+          .lastVisitedSections[
+          module
+        ]?.section ?? null
+      );
 
     },
 
@@ -117,7 +147,9 @@ export const useRoadmapStore =
         get().completedTopics;
 
       const updated =
-        completed.includes(topicId)
+        completed.includes(
+          topicId
+        )
           ? completed.filter(
               (id) =>
                 id !== topicId
@@ -128,19 +160,25 @@ export const useRoadmapStore =
             ];
 
       localStorage.setItem(
+
         "completedTopics",
+
         JSON.stringify(updated)
+
       );
 
       set({
 
-        completedTopics: updated,
+        completedTopics:
+          updated,
 
       });
 
     },
 
-    isCompleted: (topicId) => {
+    isCompleted: (
+      topicId
+    ) => {
 
       return get()
         .completedTopics
@@ -155,14 +193,29 @@ export const useRoadmapStore =
       );
 
       localStorage.removeItem(
-        "currentSection"
+        "lastVisitedSections"
+      );
+
+      localStorage.removeItem(
+        "currentModule"
+      );
+
+      localStorage.removeItem(
+        "lastLearningModule"
       );
 
       set({
 
         completedTopics: [],
 
-        currentSection: null,
+        currentModule:
+          "dashboard",
+
+        lastLearningModule:
+          "python",
+
+        lastVisitedSections:
+          {},
 
       });
 

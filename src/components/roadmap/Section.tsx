@@ -4,13 +4,14 @@ import { Section as SectionType } from "../../types/roadmap";
 import { useRoadmapStore } from "../../store/roadmapStore";
 
 interface Props {
+  moduleId: string;
   section: SectionType;
 }
-
 export default function Section({ section }: Props) {
   const completedTopics = useRoadmapStore(
     (state) => state.completedTopics
   );
+
 
   const toggleTopic = useRoadmapStore(
     (state) => state.toggleTopic

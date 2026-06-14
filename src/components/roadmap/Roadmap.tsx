@@ -52,15 +52,11 @@ export default function Roadmap() {
           <div>
 
             <h1 className="text-4xl font-bold">
-
               {module.title}
-
             </h1>
 
             <p className="mt-2 text-slate-400">
-
               {completed} of {total} topics completed
-
             </p>
 
           </div>
@@ -68,15 +64,11 @@ export default function Roadmap() {
           <div className="text-right">
 
             <p className="text-5xl font-bold text-blue-400">
-
               {progress}%
-
             </p>
 
             <p className="text-slate-500">
-
               Completed
-
             </p>
 
           </div>
@@ -104,6 +96,7 @@ export default function Roadmap() {
 
           <Section
             key={section.id}
+            moduleId={module.id}
             section={section}
           />
 
