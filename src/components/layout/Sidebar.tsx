@@ -20,6 +20,8 @@ import { roadmapModules } from "../../data";
 
 import { getModuleProgress } from "../../store/selectors";
 
+import { useRoadmapStore } from "../../store/roadmapStore";
+
 const moduleIcons: Record<string, any> = {
   python: Code2,
   numpy: Boxes,
@@ -30,10 +32,6 @@ const moduleIcons: Record<string, any> = {
   deep_learning: Cpu,
   pytorch: Cpu,
   llms: Bot,
-  rag: Bot,
-  ai_agents: Bot,
-  mlops: Cloud,
-  llmops: Cloud,
 };
 
 const platformItems = [
@@ -57,26 +55,20 @@ const platformItems = [
 
 export default function Sidebar() {
   const [learningOpen, setLearningOpen] = useState(true);
-
   const [aiOpen, setAiOpen] = useState(true);
-
   const [platformOpen, setPlatformOpen] = useState(true);
 
+  const currentModule = useRoadmapStore(
+    (state) => state.currentModule
+  );
+
+  const setCurrentModule = useRoadmapStore(
+    (state) => state.setCurrentModule
+  );
+
   return (
-    <aside
-      className="
-      w-80
-      h-screen
-      sticky
-      top-0
-      overflow-y-auto
-      bg-slate-950
-      border-r
-      border-slate-800
-      flex
-      flex-col
-      "
-    >
+    <aside className="w-80 h-screen sticky top-0 overflow-y-auto bg-slate-950 border-r border-slate-800 flex flex-col">
+
       {/* Logo */}
 
       <div className="border-b border-slate-800 p-8">
@@ -101,37 +93,17 @@ export default function Sidebar() {
 
           <button
             onClick={() => setLearningOpen(!learningOpen)}
-            className="
-              flex
-              items-center
-              justify-between
-              w-full
-              px-2
-              mb-3
-            "
+            className="flex items-center justify-between w-full px-2 mb-3"
           >
 
-            <span
-              className="
-                text-xs
-                tracking-[0.2em]
-                font-semibold
-                text-slate-500
-              "
-            >
+            <span className="text-xs tracking-[0.2em] font-semibold text-slate-500">
               LEARNING
             </span>
 
             {learningOpen ? (
-              <ChevronDown
-                size={16}
-                className="text-slate-500"
-              />
+              <ChevronDown size={16} className="text-slate-500" />
             ) : (
-              <ChevronRight
-                size={16}
-                className="text-slate-500"
-              />
+              <ChevronRight size={16} className="text-slate-500" />
             )}
 
           </button>
@@ -143,31 +115,25 @@ export default function Sidebar() {
               {/* Dashboard */}
 
               <button
-                className="
-                  flex
-                  items-center
-                  gap-4
-                  w-full
-                  rounded-xl
-                  px-4
-                  py-3
-                  hover:bg-slate-800
-                  transition-all
-                "
+                onClick={() =>
+                  setCurrentModule("dashboard")
+                }
+                className={`flex items-center gap-4 w-full rounded-xl px-4 py-3 transition-all
+
+                ${
+                  currentModule === "dashboard"
+                    ? "bg-blue-600 text-white"
+                    : "hover:bg-slate-800"
+                }`}
               >
 
-                <LayoutDashboard
-                  size={20}
-                  className="text-slate-400"
-                />
+                <LayoutDashboard size={20} />
 
-                <span>
-                  Dashboard
-                </span>
+                <span>Dashboard</span>
 
               </button>
 
-              {/* Dynamic Modules */}
+              {/* Modules */}
 
               {roadmapModules.map((module) => {
 
@@ -178,79 +144,56 @@ export default function Sidebar() {
                 const progress =
                   getModuleProgress(module.id);
 
+                const active =
+                  currentModule === module.id;
+
                 return (
 
                   <button
                     key={module.id}
-                    className="
-                      group
-                      w-full
-                      rounded-xl
-                      px-4
-                      py-3
-                      hover:bg-slate-800
-                      transition-all
-                    "
+
+                    onClick={() =>
+                      setCurrentModule(module.id)
+                    }
+
+                    className={`group w-full rounded-xl px-4 py-3 transition-all
+
+                    ${
+                      active
+                        ? "bg-blue-600"
+                        : "hover:bg-slate-800"
+                    }`}
                   >
 
-                    <div
-                      className="
-                        flex
-                        items-center
-                        justify-between
-                      "
-                    >
+                    <div className="flex items-center justify-between">
 
-                      <div
-                        className="
-                          flex
-                          items-center
-                          gap-4
-                        "
-                      >
+                      <div className="flex items-center gap-4">
 
                         <Icon
                           size={20}
-                          className="
-                            text-slate-400
-                            group-hover:text-blue-400
-                          "
+                          className={
+                            active
+                              ? "text-white"
+                              : "text-slate-400 group-hover:text-blue-400"
+                          }
                         />
 
-                        <span>
-                          {module.title}
-                        </span>
+                        <span>{module.title}</span>
 
                       </div>
 
-                      <span
-                        className="
-                          text-xs
-                          text-blue-400
-                          font-semibold
-                        "
-                      >
+                      <span className="text-xs font-semibold">
+
                         {progress.progress}%
+
                       </span>
 
                     </div>
 
-                    <div
-                      className="
-                        mt-3
-                        h-1.5
-                        rounded-full
-                        bg-slate-800
-                        overflow-hidden
-                      "
-                    >
+                    <div className="mt-3 h-1.5 rounded-full bg-slate-800 overflow-hidden">
 
                       <div
-                        className="
-                          h-full
-                          bg-blue-500
-                          transition-all
-                        "
+                        className="h-full bg-blue-400"
                         style={{
                           width: `${progress.progress}%`,
                         }}
@@ -264,27 +207,14 @@ export default function Sidebar() {
 
               })}
 
-              <button
-                className="
-                  flex
-                  items-center
-                  gap-4
-                  w-full
-                  rounded-xl
-                  px-4
-                  py-3
-                  hover:bg-slate-800
-                "
-              >
+              <button className="flex items-center gap-4 w-full rounded-xl px-4 py-3 hover:bg-slate-800">
 
                 <Sigma
                   size={20}
                   className="text-slate-400"
                 />
 
-                <span>
-                  Mathematics
-                </span>
+                <span>Mathematics</span>
 
               </button>
 
@@ -293,43 +223,24 @@ export default function Sidebar() {
           )}
 
         </div>
-                {/* AI */}
+
+        {/* AI */}
 
         <div>
 
           <button
             onClick={() => setAiOpen(!aiOpen)}
-            className="
-              flex
-              items-center
-              justify-between
-              w-full
-              px-2
-              mb-3
-            "
+            className="flex items-center justify-between w-full px-2 mb-3"
           >
 
-            <span
-              className="
-                text-xs
-                tracking-[0.2em]
-                font-semibold
-                text-slate-500
-              "
-            >
+            <span className="text-xs tracking-[0.2em] font-semibold text-slate-500">
               ARTIFICIAL INTELLIGENCE
             </span>
 
             {aiOpen ? (
-              <ChevronDown
-                size={16}
-                className="text-slate-500"
-              />
+              <ChevronDown size={16} className="text-slate-500" />
             ) : (
-              <ChevronRight
-                size={16}
-                className="text-slate-500"
-              />
+              <ChevronRight size={16} className="text-slate-500" />
             )}
 
           </button>
@@ -343,8 +254,6 @@ export default function Sidebar() {
                 { name: "Deep Learning", icon: Cpu },
                 { name: "PyTorch", icon: Cpu },
                 { name: "LLMs", icon: Bot },
-                { name: "RAG", icon: Bot },
-                { name: "AI Agents", icon: Bot },
               ].map((item) => {
 
                 const Icon = item.icon;
@@ -353,31 +262,15 @@ export default function Sidebar() {
 
                   <button
                     key={item.name}
-                    className="
-                      group
-                      flex
-                      items-center
-                      gap-4
-                      w-full
-                      rounded-xl
-                      px-4
-                      py-3
-                      hover:bg-slate-800
-                      transition-all
-                    "
+                    className="group flex items-center gap-4 w-full rounded-xl px-4 py-3 hover:bg-slate-800 transition-all"
                   >
 
                     <Icon
                       size={20}
-                      className="
-                        text-slate-400
-                        group-hover:text-blue-400
-                      "
+                      className="text-slate-400 group-hover:text-blue-400"
                     />
 
-                    <span>
-                      {item.name}
-                    </span>
+                    <span>{item.name}</span>
 
                   </button>
 
@@ -397,37 +290,17 @@ export default function Sidebar() {
 
           <button
             onClick={() => setPlatformOpen(!platformOpen)}
-            className="
-              flex
-              items-center
-              justify-between
-              w-full
-              px-2
-              mb-3
-            "
+            className="flex items-center justify-between w-full px-2 mb-3"
           >
 
-            <span
-              className="
-                text-xs
-                tracking-[0.2em]
-                font-semibold
-                text-slate-500
-              "
-            >
+            <span className="text-xs tracking-[0.2em] font-semibold text-slate-500">
               PLATFORM
             </span>
 
             {platformOpen ? (
-              <ChevronDown
-                size={16}
-                className="text-slate-500"
-              />
+              <ChevronDown size={16} className="text-slate-500" />
             ) : (
-              <ChevronRight
-                size={16}
-                className="text-slate-500"
-              />
+              <ChevronRight size={16} className="text-slate-500" />
             )}
 
           </button>
@@ -444,31 +317,15 @@ export default function Sidebar() {
 
                   <button
                     key={item.name}
-                    className="
-                      group
-                      flex
-                      items-center
-                      gap-4
-                      w-full
-                      rounded-xl
-                      px-4
-                      py-3
-                      hover:bg-slate-800
-                      transition-all
-                    "
+                    className="group flex items-center gap-4 w-full rounded-xl px-4 py-3 hover:bg-slate-800 transition-all"
                   >
 
                     <Icon
                       size={20}
-                      className="
-                        text-slate-400
-                        group-hover:text-blue-400
-                      "
+                      className="text-slate-400 group-hover:text-blue-400"
                     />
 
-                    <span>
-                      {item.name}
-                    </span>
+                    <span>{item.name}</span>
 
                   </button>
 
@@ -484,98 +341,6 @@ export default function Sidebar() {
 
       </div>
 
-      {/* Footer */}
-
-      <div
-        className="
-          border-t
-          border-slate-800
-          p-6
-        "
-      >
-
-        <div
-          className="
-            rounded-2xl
-            bg-slate-900
-            p-5
-          "
-        >
-
-          <div
-            className="
-              flex
-              justify-between
-              mb-3
-            "
-          >
-
-            <span
-              className="text-sm text-slate-400"
-            >
-              Overall Progress
-            </span>
-
-            <span
-              className="font-semibold"
-            >
-              {Math.round(
-                roadmapModules.reduce(
-                  (acc, module) =>
-                    acc +
-                    getModuleProgress(module.id).progress,
-                  0
-                ) / roadmapModules.length
-              )}%
-            </span>
-
-          </div>
-
-          <div
-            className="
-              h-2
-              rounded-full
-              bg-slate-800
-              overflow-hidden
-            "
-          >
-
-            <div
-              className="
-                h-full
-                bg-blue-500
-                transition-all
-              "
-              style={{
-                width: `${Math.round(
-                  roadmapModules.reduce(
-                    (acc, module) =>
-                      acc +
-                      getModuleProgress(module.id).progress,
-                    0
-                  ) / roadmapModules.length
-                )}%`,
-              }}
-            />
-
-          </div>
-
-          <p
-            className="
-              mt-4
-              text-xs
-              text-slate-500
-              text-center
-            "
-          >
-            🚀 AI Platform Engineer Roadmap
-          </p>
-
-        </div>
-
-      </div>
-
     </aside>
-
   );
 }

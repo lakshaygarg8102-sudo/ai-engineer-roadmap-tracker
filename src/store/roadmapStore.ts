@@ -1,109 +1,171 @@
 import { create } from "zustand";
 
 interface RoadmapState {
-
   completedTopics: string[];
 
   currentModule: string;
 
+  lastLearningModule: string;
+
+  currentSection: string | null;
+
   setCurrentModule: (module: string) => void;
+
+  setCurrentSection: (
+    section: string | null
+  ) => void;
 
   toggleTopic: (topicId: string) => void;
 
   isCompleted: (topicId: string) => boolean;
 
   clearProgress: () => void;
-
 }
 
-export const useRoadmapStore = create<RoadmapState>((set, get) => ({
+export const useRoadmapStore =
+  create<RoadmapState>((set, get) => ({
 
-  completedTopics: JSON.parse(
+    completedTopics: JSON.parse(
+      localStorage.getItem(
+        "completedTopics"
+      ) || "[]"
+    ),
 
-    localStorage.getItem("completedTopics") || "[]"
+    currentModule:
+      localStorage.getItem(
+        "currentModule"
+      ) || "dashboard",
 
-  ),
+    lastLearningModule:
+      localStorage.getItem(
+        "lastLearningModule"
+      ) || "python",
 
-  currentModule: "python",
+    currentSection:
+      localStorage.getItem(
+        "currentSection"
+      ) || null,
 
-  setCurrentModule: (module) => {
+    setCurrentModule: (module) => {
 
-    set({
-
-      currentModule: module
-
-    });
-
-  },
-
-  toggleTopic: (topicId) => {
-
-    const completed = get().completedTopics;
-
-    let updated: string[];
-
-    if (completed.includes(topicId)) {
-
-      updated = completed.filter(
-
-        id => id !== topicId
-
+      localStorage.setItem(
+        "currentModule",
+        module
       );
 
-    }
+      if (module !== "dashboard") {
 
-    else {
+        localStorage.setItem(
+          "lastLearningModule",
+          module
+        );
 
-      updated = [
+        // New module starts from top
+        localStorage.removeItem(
+          "currentSection"
+        );
 
-        ...completed,
+        set({
 
-        topicId
+          currentModule: module,
 
-      ];
+          lastLearningModule: module,
 
-    }
+          currentSection: null,
 
-    localStorage.setItem(
+        });
 
-      "completedTopics",
+        return;
+      }
 
-      JSON.stringify(updated)
+      set({
 
-    );
+        currentModule: module,
 
-    set({
+      });
 
-      completedTopics: updated
+    },
 
-    });
+    setCurrentSection: (section) => {
 
-  },
+      if (section) {
 
-  isCompleted: (topicId) => {
+        localStorage.setItem(
+          "currentSection",
+          section
+        );
 
-    return get()
+      } else {
 
-      .completedTopics
+        localStorage.removeItem(
+          "currentSection"
+        );
 
-      .includes(topicId);
+      }
 
-  },
+      set({
 
-  clearProgress: () => {
+        currentSection: section,
 
-    localStorage.removeItem(
+      });
 
-      "completedTopics"
+    },
 
-    );
+    toggleTopic: (topicId) => {
 
-    set({
+      const completed =
+        get().completedTopics;
 
-      completedTopics: []
+      const updated =
+        completed.includes(topicId)
+          ? completed.filter(
+              (id) =>
+                id !== topicId
+            )
+          : [
+              ...completed,
+              topicId,
+            ];
 
-    });
+      localStorage.setItem(
+        "completedTopics",
+        JSON.stringify(updated)
+      );
 
-  }
+      set({
 
-}));
+        completedTopics: updated,
+
+      });
+
+    },
+
+    isCompleted: (topicId) => {
+
+      return get()
+        .completedTopics
+        .includes(topicId);
+
+    },
+
+    clearProgress: () => {
+
+      localStorage.removeItem(
+        "completedTopics"
+      );
+
+      localStorage.removeItem(
+        "currentSection"
+      );
+
+      set({
+
+        completedTopics: [],
+
+        currentSection: null,
+
+      });
+
+    },
+
+  }));

@@ -1,85 +1,46 @@
-import StatsCard from "./StatsCard";
-
 import DashboardHeader from "./DashboardHeader";
+import OverallProgress from "./OverallProgress";
+import ModuleGrid from "./ModuleGrid";
+import ContinueLearning from "./ContinueLearning";
+//import ProgressChart from "./ProgressChart";
 
-import GoalCard from "./GoalCard";
+export default function Dashboard() {
+  return (
+    <div
+      className="
+      max-w-7xl
+      mx-auto
+      px-8
+      py-8
+      space-y-10
+      "
+    >
+      {/* Header */}
 
-import ProgressChart from "./ProgressChart";
+      <DashboardHeader />
 
-export default function Dashboard(){
+      {/* Overall Progress */}
 
-return(
+      <OverallProgress />
 
-<div className="p-10">
+      {/* Learning Modules */}
 
-<div className="p-8 lg:p-10"></div>
+      <ModuleGrid />
 
-<DashboardHeader/>
+      {/* Bottom Grid */}
 
-<div className="
+      <div
+        className="
+        grid
+        grid-cols-1
+        xl:grid-cols-2
+        gap-8
+        "
+      >
+        <ContinueLearning />
 
-grid
-
-grid-cols-1
-md:grid-cols-2
-xl:grid-cols-4
-
-gap-6
-
-">
-
-<StatsCard
-
-title="Progress"
-
-value="0%"
-
-/>
-
-<StatsCard
-
-title="Topics"
-
-value="0 / 1500"
-
-/>
-
-<StatsCard
-
-title="Hours"
-
-value="0"
-
-/>
-
-<StatsCard
-
-title="Interview"
-
-value="Beginner"
-
-/>
-
-</div>
-
-<div className="
-
-grid
-
-grid-cols-2
-
-gap-8
-
-">
-
-<GoalCard/>
-
-<ProgressChart/>
-
-</div>
-
-</div>
-
-)
-
+        {/* <ProgressChart /> */}
+      </div>
+    </div>
+  );
 }

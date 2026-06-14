@@ -1,63 +1,175 @@
-export default function ProgressChart(){
+import {
+  CalendarDays,
+  TrendingUp,
+} from "lucide-react";
 
-return(
+export default function ProgressChart() {
+  const weeklyData = [
+    { day: "Mon", topics: 4 },
+    { day: "Tue", topics: 7 },
+    { day: "Wed", topics: 3 },
+    { day: "Thu", topics: 9 },
+    { day: "Fri", topics: 5 },
+    { day: "Sat", topics: 11 },
+    { day: "Sun", topics: 8 },
+  ];
 
-<div className="
+  const max = Math.max(
+    ...weeklyData.map((d) => d.topics)
+  );
 
-bg-slate-900
+  return (
+    <div
+      className="
+      rounded-3xl
+      border
+      border-slate-800
+      bg-slate-900
+      p-8
+      "
+    >
+      {/* Header */}
 
-rounded-2xl
+      <div className="flex items-center justify-between">
 
-p-6
+        <div>
 
-mt-8
+          <h2 className="text-2xl font-bold">
+            Weekly Progress
+          </h2>
 
-">
+          <p className="text-slate-400 mt-1">
+            Topics completed this week
+          </p>
 
-<h2 className="
+        </div>
 
-text-xl
+        <div
+          className="
+          h-14
+          w-14
+          rounded-2xl
+          bg-blue-600/20
+          flex
+          items-center
+          justify-center
+          "
+        >
+          <CalendarDays
+            size={28}
+            className="text-blue-400"
+          />
+        </div>
 
-font-semibold
+      </div>
 
-mb-6
+      {/* Chart */}
 
-">
+      <div
+        className="
+        mt-10
+        flex
+        justify-between
+        items-end
+        h-72
+        gap-4
+        "
+      >
+        {weeklyData.map((item) => {
 
-Weekly Progress
+          const height =
+            (item.topics / max) * 220;
 
-</h2>
+          return (
 
-<div className="
+            <div
+              key={item.day}
+              className="
+              flex
+              flex-col
+              items-center
+              flex-1
+              "
+            >
+              <span className="mb-3 text-sm text-slate-400">
 
-flex
+                {item.topics}
 
-items-end
+              </span>
 
-gap-4
+              <div
+                className="
+                w-full
+                rounded-t-xl
+                bg-gradient-to-t
+                from-blue-600
+                via-cyan-500
+                to-cyan-300
+                hover:scale-105
+                transition-all
+                duration-300
+                cursor-pointer
+                "
+                style={{
+                  height,
+                }}
+              />
 
-h-52
+              <span className="mt-4 text-slate-400">
 
-">
+                {item.day}
 
-<div className="bg-blue-500 w-10 h-20 rounded"/>
+              </span>
 
-<div className="bg-blue-500 w-10 h-36 rounded"/>
+            </div>
 
-<div className="bg-blue-500 w-10 h-24 rounded"/>
+          );
 
-<div className="bg-blue-500 w-10 h-44 rounded"/>
+        })}
+      </div>
 
-<div className="bg-blue-500 w-10 h-28 rounded"/>
+      {/* Footer */}
 
-<div className="bg-blue-500 w-10 h-52 rounded"/>
+      <div
+        className="
+        mt-8
+        flex
+        items-center
+        justify-between
+        border-t
+        border-slate-800
+        pt-6
+        "
+      >
+        <div>
 
-<div className="bg-blue-500 w-10 h-40 rounded"/>
+          <p className="text-slate-400">
+            This Week
+          </p>
 
-</div>
+          <h3 className="text-3xl font-bold mt-2">
+            {weeklyData.reduce(
+              (sum, item) => sum + item.topics,
+              0
+            )} Topics
+          </h3>
 
-</div>
+        </div>
 
-)
+        <div className="flex items-center gap-3">
 
+          <TrendingUp
+            className="text-green-400"
+            size={22}
+          />
+
+          <span className="text-green-400 font-semibold">
+            +18%
+          </span>
+
+        </div>
+
+      </div>
+    </div>
+  );
 }

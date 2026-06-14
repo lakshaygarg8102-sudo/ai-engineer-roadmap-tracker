@@ -7,84 +7,109 @@ import {
   getTotalTopics,
 } from "../../store/selectors";
 
+import { useRoadmapStore } from "../../store/roadmapStore";
+
 export default function Roadmap() {
-  const total = getTotalTopics();
-  const completed = getCompletedTopics();
-  const progress = getOverallProgress();
+  const currentModule = useRoadmapStore(
+    (state) => state.currentModule
+  );
+
+  if (currentModule === "dashboard") {
+    return null;
+  }
+
+  const module = roadmapModules.find(
+    (m) => m.id === currentModule
+  );
+
+  if (!module) {
+    return (
+      <div className="py-20 text-center text-red-500">
+        Module not found.
+      </div>
+    );
+  }
+
+  const total = getTotalTopics(module.id);
+
+  const completed = getCompletedTopics(
+    module.id
+  );
+
+  const progress = getOverallProgress(
+    module.id
+  );
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
 
       {/* Header */}
 
-      <div className="rounded-2xl bg-slate-900 border border-slate-800 p-8">
+      <div className="rounded-3xl border border-slate-800 bg-slate-900 p-8">
 
-        <h1 className="text-4xl font-bold mb-6">
-          🧠 AI Engineer Roadmap
-        </h1>
+        <div className="flex items-center justify-between">
 
-        <div className="space-y-4">
+          <div>
 
-          <div className="flex justify-between text-sm">
+            <h1 className="text-4xl font-bold">
 
-            <span>Overall Progress</span>
+              {module.title}
 
-            <span>{progress}%</span>
+            </h1>
 
-          </div>
+            <p className="mt-2 text-slate-400">
 
-          <div className="w-full h-4 bg-slate-800 rounded-full overflow-hidden">
+              {completed} of {total} topics completed
 
-            <div
-              className="h-full bg-blue-500 transition-all duration-500"
-              style={{
-                width: `${progress}%`,
-              }}
-            />
+            </p>
 
           </div>
 
-          <div className="flex justify-between text-slate-400">
+          <div className="text-right">
 
-            <span>{completed} Completed</span>
+            <p className="text-5xl font-bold text-blue-400">
 
-            <span>{total} Topics</span>
+              {progress}%
+
+            </p>
+
+            <p className="text-slate-500">
+
+              Completed
+
+            </p>
 
           </div>
+
+        </div>
+
+        <div className="mt-8 h-3 overflow-hidden rounded-full bg-slate-800">
+
+          <div
+            className="h-full rounded-full bg-blue-500 transition-all duration-500"
+            style={{
+              width: `${progress}%`,
+            }}
+          />
 
         </div>
 
       </div>
 
-      {/* Modules */}
+      {/* Sections */}
 
-      {roadmapModules.map((module) => (
+      <div className="space-y-6">
 
-        <div
-          key={module.id}
-          className="space-y-6"
-        >
+        {module.sections.map((section) => (
 
-          <div className="border-b border-slate-800 pb-4">
+          <Section
+            key={section.id}
+            section={section}
+          />
 
-            <h2 className="text-3xl font-bold">
-              {module.title}
-            </h2>
+        ))}
 
-          </div>
-
-          {module.sections.map((section) => (
-
-            <Section
-              key={section.id}
-              section={section}
-            />
-
-          ))}
-
-        </div>
-
-      ))}
+      </div>
 
     </div>
   );
