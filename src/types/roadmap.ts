@@ -22,3 +22,4 @@ export interface Module {
   title: string;
   sections: Section[];
 }
+
