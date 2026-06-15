@@ -8,29 +8,23 @@ export function getTotalTopics(moduleId?: string): number {
       )
     : roadmapModules;
 
-  return modules.reduce(
-    (moduleTotal, module) =>
-      moduleTotal +
-      module.sections.reduce(
-        (sectionTotal, section) =>
-          sectionTotal +
-          section.groups.reduce(
-            (groupTotal, group) =>
-              groupTotal +
-              group.topics.length,
-            0
-          ),
-        0
-      ),
-    0
-  );
+  let total = 0;
+
+  modules.forEach((module) => {
+    module.sections.forEach((section) => {
+      section.groups.forEach((group) => {
+        total += group.topics.length;
+      });
+    });
+  });
+
+  return total;
 }
 
 export function getCompletedTopics(
   moduleId?: string
 ): number {
 
-  // ✅ Read directly from Zustand store.
   const completedTopics =
     useRoadmapStore.getState().completedTopics;
 
@@ -43,17 +37,25 @@ export function getCompletedTopics(
   let completed = 0;
 
   modules.forEach((module) => {
+
     module.sections.forEach((section) => {
+
       section.groups.forEach((group) => {
+
         group.topics.forEach((topic) => {
+
           if (
             completedTopics.includes(topic.id)
           ) {
             completed++;
           }
+
         });
+
       });
+
     });
+
   });
 
   return completed;
@@ -63,7 +65,8 @@ export function getOverallProgress(
   moduleId?: string
 ): number {
 
-  const total = getTotalTopics(moduleId);
+  const total =
+    getTotalTopics(moduleId);
 
   if (total === 0) {
     return 0;
@@ -79,16 +82,15 @@ export function getOverallProgress(
 export function getModuleProgress(
   moduleId: string
 ) {
+  const total =
+    getTotalTopics(moduleId);
 
   const completed =
     getCompletedTopics(moduleId);
 
-  const total =
-    getTotalTopics(moduleId);
-
   return {
-    completed,
     total,
+    completed,
     progress:
       total === 0
         ? 0
